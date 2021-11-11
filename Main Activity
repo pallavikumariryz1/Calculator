@@ -1,0 +1,91 @@
+#Code of Main Activity
+package com.example.cal
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.View
+import android.widget.TextView
+import android.widget.Button
+
+class MainActivity : AppCompatActivity() {
+    lateinit var textView:TextView
+    var dotPressed=false
+    var operatorAtLast=false
+    var operatorPresent='$'
+    var minusAtLast=false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        textView = findViewById(R.id.display)
+    }
+    fun digitButton(view:View){
+        if(textView.text.toString()=="0")
+            textView.text=""
+            textView.append((view as Button).text)
+        operatorAtLast=false
+        minusAtLast=false
+    }
+    fun dotButton(view: View){
+        if(!dotPressed){
+            if(operatorAtLast&&textView.text.toString()!="0")
+                textView.append("0.")
+            else
+                textView.append(".")
+             dotPressed=true
+        }
+    }
+    fun functionButton(view:View){
+        if((view as Button).text=="CLR"){
+            textView.text="0"
+            dotPressed=false
+            operatorAtLast=false
+            operatorPresent='$'
+            minusAtLast=false
+        }
+        else{
+            if(view.text=="-"&&!minusAtLast){
+                if(textView.text.toString()=="0"){
+                    textView.text=" "
+                }
+                textView.append(view.text)
+                minusAtLast=true
+                operatorPresent='-'
+            }
+            else {
+                if (!operatorAtLast && operatorPresent=='$'&& !minusAtLast) {
+                    textView.append(view.text)
+                    operatorAtLast = true
+                    operatorPresent = view.text[0]
+                }
+            }
+        }
+
+    }
+    fun onEqual(view:View){
+        if(operatorPresent!='$'){
+            var expression=textView.text.toString()
+            var operatorIndex=expression.indexOf(operatorPresent)
+            var operand1=expression.substring(0,operatorIndex).toDouble()
+            var operand2=expression.substring(operatorIndex+1).toDouble()
+            textView.text="${operand1} ${operand2}"
+            var ans=0.0
+            when (operatorPresent) {
+                '+' ->{
+                    ans=operand1 + operand2
+                }
+
+                '-' -> {
+                       ans=operand1-operand2
+                }
+                '*' -> {
+                    ans=operand1 * operand2
+                }
+                '/'->{
+                    ans=operand1/operand2
+                }
+            }
+            textView.text=ans.toString()
+        }
+    }
+}
